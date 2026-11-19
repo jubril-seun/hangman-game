@@ -46,17 +46,17 @@ function createGame(){
 
     const player = createPlayer();
 
-    let secretWord = "Eggs";  
-    let userWord = ['','','',''];
+    let secretWord = "";  
+    let userWord = [];
     
-    // const wordBank = (function () {
-    //     const wordsArr = ["Potato", "Eggs", "Adam", "Computer", "Bottle", "Automobile"]
+    const wordBank = (function () {
+        const wordsArr = ["Potato", "Eggs", "Adam", "Computer", "Bottle", "Automobile"]
 
-    //     secretWord = wordsArr[Math.floor(Math.random() * wordsArr.length)];
-    //     for(let i = 0; i < secretWord.length; i++){
-    //         userWord[i] = "";
-    //     };
-    // })();
+        secretWord = wordsArr[Math.floor(Math.random() * wordsArr.length)];
+        for(let i = 0; i < secretWord.length; i++){
+            userWord[i] = "";
+        };
+    })();
 
     const arrSecretWord = secretWord.toLocaleLowerCase().split('');
     
@@ -111,16 +111,17 @@ function createGame(){
             console.log("There's a match!");
         }
 
-
-        if(isGameOver.playerLose){
-            console.log("You have lost!");
-            player.addLoss();
-            return;
-        } else if(isGameOver.playerWin){
-            console.log("You Win!");
-            player.addWin();
-            return;
-        };
+        setTimeout(() => {
+            if(isGameOver.playerLose){
+                console.log("You have lost!");
+                player.addLoss();
+                return;
+            } else if(isGameOver.playerWin){
+                console.log("You Win!");
+                player.addWin();
+                return;
+            };           
+        }, 1500)
     }
 
     const getIsGameOver = () => isGameOver;
@@ -138,18 +139,22 @@ function createGame(){
     }
 }
 
-const game = createGame();
+function displayController(){
+    const game = createGame();
 
-console.log(game.getSecretWord());
-game.playRound("p");
-game.playRound("r");
-game.playRound("f");
-game.playRound("f");
-game.playRound("f");
-game.playRound("f");
-console.log(game.getUserWord());
-console.log(game.getIsGameOver().playerLose);
-console.log(game.getLives());
-console.log(game.playRound("p"));
-console.log(game.playRound("p"));
-console.log(game.getLosses());
+    
+}
+
+// const game = createGame();
+
+// console.log(game.getSecretWord());
+// game.playRound("f");
+// game.playRound("f");
+// game.playRound("f");
+// game.playRound("d");
+// game.playRound("c");
+// game.playRound("e");
+// console.log(game.getUserWord());
+// console.log(game.getIsGameOver().playerLose);
+// console.log(game.getLives());
+// console.log(game.getLosses());
