@@ -46,59 +46,84 @@ function createGame(){
 
     const player = createPlayer();
 
-    let secretWord = "";
-    let userWord = [];
+    let secretWord = "Eggs";  
+    let userWord = ['','','',''];
     
-    const wordBank = (function () {
-        const wordsArr = [
-            "Potato", 
-            "Eggs", 
-            "Adam", 
-            "Computer", 
-            "Bottle", 
-            "Automobile"
-        ]
+    // const wordBank = (function () {
+    //     const wordsArr = ["Potato", "Eggs", "Adam", "Computer", "Bottle", "Automobile"]
 
-        secretWord = wordsArr[Math.floor(Math.random() * wordsArr.length)];
-        for(let i = 0; i < secretWord.length; i++){
-            userWord[i] = "";
-        };
-    })();
+    //     secretWord = wordsArr[Math.floor(Math.random() * wordsArr.length)];
+    //     for(let i = 0; i < secretWord.length; i++){
+    //         userWord[i] = "";
+    //     };
+    // })();
+
+    const arrSecretWord = secretWord.toLocaleLowerCase().split('');
     
     const getSecretWord = () => secretWord;
     const getUserWord = () => userWord;
 
     const checkGuess = (letter) => {
-        const word = secretWord.toLowerCase().split('');
-        const match = word.includes(letter.toLowerCase());
+        const lowerCased = letter.toLowerCase();
+        const match = arrSecretWord.includes(lowerCased);
 
         return match;
     }
 
     const updateWord = (letter) => {
-        const lowerCase = letter.toLowerCase();
-        const word = secretWord.toLowerCase().split('');
+        const lowerCased = letter.toLowerCase();
 
-        word.forEach((item, index) => {
-             if(item === lowerCase){
+        arrSecretWord.forEach((item, index) => {
+             if(item === lowerCased){
                 userWord[index] = secretWord[index];
              };
         });
     }
+
+    let isGameOver = {
+        playerLose: false,
+        playerWin: false,
+    }
+
+    const gameOver = () => {
+        if(player.getLives() === 0){
+            isGameOver.playerLose = true;
+            return true;
+        } 
+        
+        if(userWord.join('') === secretWord){
+            isGameOver.playerWin = true;
+            return true;
+        };
+    }
     
 
     const playRound = (letter) => {
+        if(gameOver()) return;
+        
         if(!checkGuess(letter)){
-            console.log("There is no match, sorry!");
-            player.loseLives();
-            return false;
+            player.loseLives(); 
+            gameOver();
+            console.log("There is no match, sorry!");  
         } else {
             updateWord(letter);
+            gameOver();
             console.log("There's a match!");
-            return true;
         }
+
+
+        if(isGameOver.playerLose){
+            console.log("You have lost!");
+            player.addLoss();
+            return;
+        } else if(isGameOver.playerWin){
+            console.log("You Win!");
+            player.addWin();
+            return;
+        };
     }
 
+    const getIsGameOver = () => isGameOver;
 
     return {
         getSecretWord,
@@ -106,15 +131,25 @@ function createGame(){
         checkGuess,
         playRound,
         updateWord,
-        getLives: player.getLives
+        getLives: player.getLives,
+        getLosses: player.getLosses,
+        getWins: player.getWins,
+        getIsGameOver
     }
 }
 
 const game = createGame();
 
 console.log(game.getSecretWord());
-console.log(game.playRound("E"));
+game.playRound("p");
+game.playRound("r");
+game.playRound("f");
+game.playRound("f");
+game.playRound("f");
+game.playRound("f");
 console.log(game.getUserWord());
-console.log(game.playRound("g"));
-console.log(game.getUserWord());
+console.log(game.getIsGameOver().playerLose);
 console.log(game.getLives());
+console.log(game.playRound("p"));
+console.log(game.playRound("p"));
+console.log(game.getLosses());
