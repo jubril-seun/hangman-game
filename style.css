@@ -5,5 +5,84 @@
 }
 
 body {
-    
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+
+:root {
+    --white-color: white;
+    --gray-color: rgb(194, 194, 194);
+    --black-color: black;
+    --red-color: rgb(228, 51, 51);
+}
+
+main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 46px;
+    /* background-color: blue; */
+}
+
+header {
+    font-family: "Special Elite";
+    display: flex;
+    justify-content: center;
+}
+
+header h2 {
+    font-size: clamp(24px, 10vw, 54px);
+}
+
+.game-board {
+    width: fit-content;
+    height: fit-content;
+}
+
+.top-area {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;  
+    opacity: 1;
+    transition: opacity .5s;
+    gap: 12px;
+}
+
+.user-input:focus {
+    border: none;
+    outline: 2px solid rgba(102, 138, 236, 0.436);
+}
+
+.user-input {
+    width: clamp(24px, 60vw, 400px);
+    border-radius: .5rem;
+    background-color: var(--white-color);
+    border: 1px solid var(--gray-color);
+    font-size: 20px;
+    padding-left: 12px;
+}
+
+.submit-btn {
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: .5rem;
+    background-color: var(--white-color);
+    border: 1px solid var(--gray-color);
+    cursor: pointer;
+    transition: .2s;
+}
+
+.submit-btn:hover {
+    background-color: var(--black-color);
+    color: var(--red-color);
+}
+
+.submit-btn:active {
+    scale: 96%;
+}
+
+.fade {
+    opacity: 0;
 }

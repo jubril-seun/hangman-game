@@ -1,5 +1,5 @@
-function createPlayer (name = "Player") {
-    let playerName = name;
+function createPlayer () {
+    let playerName = "";
     let lives = 6;
     let wins = 0;
     let losses = 0;
@@ -132,18 +132,71 @@ function createGame(){
         checkGuess,
         playRound,
         updateWord,
-        getLives: player.getLives,
-        getLosses: player.getLosses,
-        getWins: player.getWins,
-        getIsGameOver
+        // getLives: player.getLives,
+        // getLosses: player.getLosses,
+        // getWins: player.getWins,
+        getIsGameOver,
     }
 }
 
-function displayController(){
+function displayController() {
     const game = createGame();
+    const player = createPlayer();
 
-    
-}
+    const board = document.querySelector('.game-board');
+    const boardTop = document.querySelector('.top-area');
+
+    const gameStartInput = () => {
+        boardTop.replaceChildren();
+
+        const input = document.createElement('input');
+        input.classList.add('user-input');
+        input.id = 'user-input';
+        input.setAttribute("placeholder", "Enter name...");
+        const button = document.createElement('button');
+        button.textContent = "Begin";
+        button.classList.add('submit-btn');
+        
+        boardTop.appendChild(input);
+        boardTop.appendChild(button);
+    }
+
+    gameStartInput();
+
+    const greeting = () => {
+        boardTop.replaceChildren();
+
+        boardTop.classList.remove('fade');
+        const greeting = document.createElement('h2');
+        greeting.classList.add('greeting-txt');
+        greeting.textContent = `Welcome, ${player.getPlayerName()}.`;
+
+        boardTop.appendChild(greeting);
+    }
+
+    boardTop.addEventListener('click', (e) => {
+        const submit = e.target.classList.contains('submit-btn');
+        const input = document.getElementById('user-input');
+        
+        if(submit && input.value != ""){
+            player.updatePlayerName(input.value);
+            boardTop.classList.add('fade');
+
+            setTimeout(() => {
+                greeting();
+            }, 700);s
+        }
+
+        console.log(player.getPlayerName());
+    })
+
+
+};
+
+
+displayController();
+
+
 
 // const game = createGame();
 
