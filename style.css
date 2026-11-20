@@ -11,24 +11,30 @@ body {
 :root {
     --white-color: white;
     --gray-color: rgb(194, 194, 194);
+    --gray-color2: rgb(163, 163, 163);
+    --gray-color3: rgb(242, 242, 242);
     --black-color: black;
-    --red-color: rgb(228, 51, 51);
-}
-
-main {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 46px;
-    /* background-color: blue; */
+    --red-color: rgb(236, 89, 89);
+    --red-color2: rgb(165, 16, 16);
+    --green-color: rgb(140, 215, 154);
 }
 
 header {
     font-family: "Special Elite";
     display: flex;
     justify-content: center;
+    margin-top: 24px;
+}
+
+main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 12px;
+    padding-bottom: 24px;
+    gap: 46px;
 }
 
 header h2 {
@@ -36,8 +42,11 @@ header h2 {
 }
 
 .game-board {
-    width: fit-content;
+    width: 60vw;
     height: fit-content;
+    margin-left: 48px;
+    margin-right: 48px;
+    /* background-color: red; */
 }
 
 .top-area {
@@ -47,6 +56,7 @@ header h2 {
     opacity: 1;
     transition: opacity .5s;
     gap: 12px;
+    margin-bottom: 36px;
 }
 
 .user-input:focus {
@@ -55,17 +65,18 @@ header h2 {
 }
 
 .user-input {
-    width: clamp(24px, 60vw, 400px);
+    width: clamp(16px, 60vw, 400px);
     border-radius: .5rem;
     background-color: var(--white-color);
     border: 1px solid var(--gray-color);
-    font-size: 20px;
+    font-size: clamp(8px, 5vw, 16px);
     padding-left: 12px;
 }
 
-.submit-btn {
-    padding: 10px 24px;
-    font-size: 16px;
+.submit-btn,
+#dialog-wrapper button {
+    padding: 10px 20px;
+    font-size: clamp(8px, 5vw, 16px);
     font-weight: 500;
     border-radius: .5rem;
     background-color: var(--white-color);
@@ -74,15 +85,164 @@ header h2 {
     transition: .2s;
 }
 
-.submit-btn:hover {
+.submit-btn:hover,
+#dialog-wrapper button:hover {
     background-color: var(--black-color);
     color: var(--red-color);
 }
 
-.submit-btn:active {
+.submit-btn:active,
+#dialog-wrapper button:active {
     scale: 96%;
 }
 
-.fade {
+.bottom-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
     opacity: 0;
+    transition: opacity .5s;
+}
+
+.fade-in{
+    opacity: 1;
+}
+
+.user-word-div {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    /* background-color: blue; */
+}
+
+.top-txt,
+.life-counter {
+    font-size: 14px;
+    color: var(--gray-color2);
+}
+
+.txt-cell {
+    display: flex;
+    align-items: center;
+    width: clamp(8px, 10vw, 36px);
+    height: clamp(8px, 10vw, 36px);
+    padding: clamp(1rem, 10vw, 2rem);
+    justify-content: center;
+    border: 1px solid var(--gray-color);
+    border-radius: .5rem;
+    font-size: clamp(8px, 10vw, 36px);
+    user-select: none;
+}
+
+.empty {
+    background-color: var(--gray-color);
+    color: var(--white-color);
+}
+
+.token-div {
+    display: flex;
+    gap: .5rem;
+}
+
+.dead {
+    background-color: var(--red-color2);
+}
+
+.lives-cell {
+    width: clamp(12px, 5vw, 16px);
+    height: clamp(12px, 5vw, 16px);
+    border: 1px solid var(--gray-color);
+    border-radius: 50%;
+    /* background-color: var(--green-color); */
+}
+
+.letters-div {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    /* background-color: blue; */
+}
+
+.letters-btn {
+    display: flex;
+    align-items: center;
+    width: clamp(8px, 5vw, 36px);
+    height: clamp(8px, 5vw, 36px);
+    padding: clamp(1.5rem, 5vw, 2rem);
+    justify-content: center;
+    border: 1px solid var(--gray-color);
+    border-radius: .5rem;
+    font-size: clamp(8px, 8vw, 24px);
+    background-color: var(--white-color);
+    cursor: pointer;
+    transition: .2s;
+}
+
+.good-guess {
+    background-color: var(--green-color);
+    pointer-events: none;
+}
+
+.bad-guess {
+    background-color: var(--red-color);
+    pointer-events: none;
+}
+
+.letters-btn:hover {
+    scale: 110%;
+    background-color: var(--gray-color3);
+}
+
+.letters-btn:active {
+    scale: 96%;
+}
+
+.game-msg {
+    font-size: 16px;
+    color: var(--black-color);
+    display: flex;
+    justify-content: center;
+    border-bottom: 1.5px solid var(--gray-color3);
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+.player-score {
+    font-size: 14px;
+    color: var(--gray-color2)
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+dialog {
+    width: min(80vw, 350px);
+    border: 1px solid var(--gray-color);
+    margin: auto;
+    border-radius: .5rem;
+}
+
+dialog::backdrop {
+    background: #000000a8;
+}
+
+#dialog-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 14px;
+}
+
+#dialog-wrapper h2 {
+    font-family: "Special ELite";
+    text-align: center;
+    font-size: 18px;
 }

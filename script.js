@@ -1,11 +1,28 @@
-function createPlayer () {
-    let playerName = "";
+function cell() {
+let value = "";
+
+const addLetter = (letter) => {
+    value = letter;
+}
+
+const getLetter = () => value;
+
+return {addLetter, getLetter};
+}
+
+
+function createPlayer (name = "Player") {
+    let playerName = name;
     let lives = 6;
     let wins = 0;
     let losses = 0;
 
     const updatePlayerName = (newName) => {
         playerName = newName;
+    }
+
+    const resetLives = () => {
+        lives = 6;
     }
 
     const loseLives = () => {
@@ -36,7 +53,8 @@ function createPlayer () {
         getPlayerName,
         getLives,
         getWins,
-        getLosses
+        getLosses,
+        resetLives
     }
 
 }
@@ -48,34 +66,51 @@ function createGame(){
 
     let secretWord = "";  
     let userWord = [];
-    
-    const wordBank = (function () {
-        const wordsArr = ["Potato", "Eggs", "Adam", "Computer", "Bottle", "Automobile"]
+    let arrSecretWord = [];
 
-        secretWord = wordsArr[Math.floor(Math.random() * wordsArr.length)];
+    const generateWord = () => {
+        const words = ["Potato", "Eggs", "Adam", "Computer", "Bottle", "Automobile"];
+        return words[Math.floor(Math.random() * words.length)];
+    }
+
+    const initializeRound = () => {
+        secretWord = generateWord();
+        arrSecretWord = secretWord.toLocaleLowerCase().split('');
+
+        userWord = [];
         for(let i = 0; i < secretWord.length; i++){
-            userWord[i] = "";
+            userWord[i] = cell();
         };
-    })();
 
-    const arrSecretWord = secretWord.toLocaleLowerCase().split('');
+    }
+
+    initializeRound();
     
     const getSecretWord = () => secretWord;
     const getUserWord = () => userWord;
+
+    let guess = null;
 
     const checkGuess = (letter) => {
         const lowerCased = letter.toLowerCase();
         const match = arrSecretWord.includes(lowerCased);
 
-        return match;
+        if(match){
+            guess = true;
+        } else {
+            guess = false;
+        }
     }
+
+
+    const getGuess = () => guess;
 
     const updateWord = (letter) => {
         const lowerCased = letter.toLowerCase();
 
         arrSecretWord.forEach((item, index) => {
              if(item === lowerCased){
-                userWord[index] = secretWord[index];
+                userWord[index].addLetter(secretWord[index]);
              };
         });
     }
@@ -85,13 +120,15 @@ function createGame(){
         playerWin: false,
     }
 
+    let gameMsg = "";
+
     const gameOver = () => {
         if(player.getLives() === 0){
             isGameOver.playerLose = true;
             return true;
         } 
         
-        if(userWord.join('') === secretWord){
+        if(userWord.every(n => n.getLetter() != "")){
             isGameOver.playerWin = true;
             return true;
         };
@@ -101,50 +138,67 @@ function createGame(){
     const playRound = (letter) => {
         if(gameOver()) return;
         
-        if(!checkGuess(letter)){
+        checkGuess(letter);
+        
+        if(!guess){
             player.loseLives(); 
             gameOver();
-            console.log("There is no match, sorry!");  
+            gameMsg = `Oof! Sorry, bud.`
         } else {
             updateWord(letter);
             gameOver();
-            console.log("There's a match!");
+            gameMsg = `Nice one, ${player.getPlayerName()}! Keep going.`
         }
 
-        setTimeout(() => {
-            if(isGameOver.playerLose){
-                console.log("You have lost!");
-                player.addLoss();
-                return;
-            } else if(isGameOver.playerWin){
-                console.log("You Win!");
-                player.addWin();
-                return;
-            };           
-        }, 1500)
+        if(isGameOver.playerLose){
+            player.addLoss();
+        } else if(isGameOver.playerWin){
+            player.addWin();
+        };
+    }
+
+    const resetGame = () => {
+        gameMsg = "";
+
+        isGameOver.playerLose = false;
+        isGameOver.playerWin = false;
+
+        guess = null;
+
+        player.resetLives();
+
+        initializeRound();
+
+        arrSecretWord = secretWord.toLowerCase().split('');
     }
 
     const getIsGameOver = () => isGameOver;
+    const getGameMsg = () => gameMsg;
 
     return {
         getSecretWord,
         getUserWord,
-        checkGuess,
+        getGuess,
         playRound,
+        getLives: player.getLives,
+        getWins: player.getWins,
+        getLosses: player.getLosses,
+        updatePlayerName: player.updatePlayerName,
+        getPlayerName: player.getPlayerName,
         updateWord,
-        // getLives: player.getLives,
-        // getLosses: player.getLosses,
-        // getWins: player.getWins,
         getIsGameOver,
+        getGameMsg,
+        resetGame,
+        gameOver,
     }
 }
 
 function displayController() {
     const game = createGame();
-    const player = createPlayer();
 
-    const board = document.querySelector('.game-board');
     const boardTop = document.querySelector('.top-area');
+    const boardBottom = document.querySelector('.bottom-area');
+    const modal = document.getElementById('gameover-modal');
 
     const gameStartInput = () => {
         boardTop.replaceChildren();
@@ -157,57 +211,196 @@ function displayController() {
         button.textContent = "Begin";
         button.classList.add('submit-btn');
         
-        boardTop.appendChild(input);
-        boardTop.appendChild(button);
+        boardTop.append(input, button);
+        
     }
 
     gameStartInput();
 
     const greeting = () => {
+
         boardTop.replaceChildren();
 
-        boardTop.classList.remove('fade');
+        boardTop.classList.remove('fade-out');
         const greeting = document.createElement('h2');
         greeting.classList.add('greeting-txt');
-        greeting.textContent = `Welcome, ${player.getPlayerName()}.`;
+        greeting.textContent = `Welcome, ${game.getPlayerName()}.`;
 
         boardTop.appendChild(greeting);
     }
 
+    const printGame = () => {
+        boardBottom.replaceChildren();
+
+        const userWord = game.getUserWord();
+        const userLives = game.getLives();
+
+        const txt = document.createElement('p');
+        txt.classList.add('top-txt');
+        txt.textContent = "Secret word";
+
+        boardBottom.appendChild(txt);
+
+        const userWordDiv = document.createElement('div');
+        userWordDiv.classList.add('user-word-div');
+        boardBottom.appendChild(userWordDiv);
+        
+        userWord.forEach((item, index) => {
+            const cell = document.createElement('div');
+            cell.classList.add('txt-cell');
+            cell.setAttribute ('index', index);
+            cell.textContent = "_";
+            cell.classList.add('empty');
+            userWordDiv.appendChild(cell);
+        });
+
+        const lifeCounter = document.createElement('p');
+        lifeCounter.classList.add('life-counter');
+        lifeCounter.textContent = `Lives left: ${userLives}`;
+        boardBottom.appendChild(lifeCounter);
+
+        const tokenDiv = document.createElement('div');
+        tokenDiv.classList.add('token-div');
+        boardBottom.appendChild(tokenDiv);
+
+        for(let i = 0; i < userLives; i++){
+            const cell = document.createElement('div');
+            cell.classList.add('lives-cell');
+            cell.setAttribute('index', [i]);
+            tokenDiv.appendChild(cell);
+        }
+
+        const lettersDiv = document.createElement('div');
+        lettersDiv.classList.add('letters-div');
+        boardBottom.appendChild(lettersDiv);
+
+        const printAlphabet = (() => {
+            let alphabet = 'abcdefghijklmnopqrstuvwxyz';
+
+            for(i = 0; i < alphabet.length; i++){
+                const cell = document.createElement('button');
+                cell.classList.add('letters-btn');
+                cell.setAttribute('letter', alphabet[i]);
+                cell.textContent = alphabet[i].toUpperCase();
+                lettersDiv.appendChild(cell);
+            }
+        })();
+
+        const gameMsg = document.createElement('div');
+        gameMsg.classList.add('game-msg');
+        gameMsg.textContent = game.getGameMsg();
+        boardBottom.appendChild(gameMsg);
+
+        const playerScore = document.createElement('p');
+        playerScore.classList.add('player-score');
+        playerScore.textContent = `Wins: ${game.getWins()} · Losses: ${game.getLosses()}`
+        boardBottom.appendChild(playerScore);
+
+        boardBottom.classList.add('fade-in');
+    }
+
+    // printGame();
+
+    const update = () => {
+        const userWord = game.getUserWord();
+        const userLives = game.getLives();
+        
+        userWord.forEach((item, index) => {
+            if(item.getLetter() != ""){
+                const cell = document.querySelector(`.txt-cell[index="${index}"]`);
+                cell.textContent = item.getLetter();
+            }
+        })
+
+        const lives = document.querySelector('.life-counter');
+        lives.textContent = `Lives left: ${userLives}`;
+
+        const gameMsg = document.querySelector('.game-msg');
+        gameMsg.textContent = game.getGameMsg();
+
+        const livesCells = document.querySelectorAll('.lives-cell');
+        livesCells.forEach((item, index) => {
+            if(index + 1 > userLives){
+                item.classList.add('dead');
+            }
+        })
+
+        const modalMsg = document.getElementById('modal-message');
+
+        if(game.getIsGameOver().playerLose){
+            modalMsg.textContent = "You lose... Would you like to play again?"
+            modal.showModal();
+        } 
+
+        if (game.getIsGameOver().playerWin) {
+            modalMsg.textContent = "You win! Would you like to play again?"
+            modal.showModal();
+        }
+
+        const score = document.querySelector('.player-score');
+        score.textContent = `Wins: ${game.getWins()} · Losses: ${game.getLosses()}`;
+        
+    }
+
+    const reset = () => {    
+        game.resetGame();
+        printGame();
+    }
+
+    // Event listener for begin/enter name button
     boardTop.addEventListener('click', (e) => {
         const submit = e.target.classList.contains('submit-btn');
         const input = document.getElementById('user-input');
         
         if(submit && input.value != ""){
-            player.updatePlayerName(input.value);
-            boardTop.classList.add('fade');
+            game.updatePlayerName(input.value);
+            boardTop.classList.add('fade-out');
 
             setTimeout(() => {
                 greeting();
-            }, 700);s
+                printGame();
+            }, 700);
         }
-
-        console.log(player.getPlayerName());
     })
 
 
+    boardBottom.addEventListener('click', (e) => {
+        if(game.gameOver()) {
+            modal.showModal();
+            update();
+            return;
+        }
+        
+        const i = e.target.classList.contains('letters-btn');
+
+        if(i){
+            const btn = e.target;
+            const letter = btn.getAttribute('letter');
+            game.playRound(letter);
+            update();
+
+            if(game.getGuess()){
+                btn.classList.add('good-guess');
+                btn.disabled = true;
+            } else {
+                btn.classList.add('bad-guess');
+                btn.disabled = true;
+            }
+        }
+    });
+
+    modal.addEventListener('click', (e) => {
+        const yesBtn = e.target.id === 'yes-btn';
+        const noBtn = e.target.id === 'no-btn';
+
+        if(yesBtn){
+            reset();
+            modal.close();
+        } else if (noBtn){
+            modal.close();
+        }
+    })
 };
 
 
 displayController();
-
-
-
-// const game = createGame();
-
-// console.log(game.getSecretWord());
-// game.playRound("f");
-// game.playRound("f");
-// game.playRound("f");
-// game.playRound("d");
-// game.playRound("c");
-// game.playRound("e");
-// console.log(game.getUserWord());
-// console.log(game.getIsGameOver().playerLose);
-// console.log(game.getLives());
-// console.log(game.getLosses());

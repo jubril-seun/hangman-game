@@ -11,15 +11,24 @@
     <title>Hangman Game</title>
 </head>
 <body>
-
-    <main>
     <header>
         <h2>Hangm<span class="header-emoji">💀</span>n</h2>
     </header>
+    <main>
         <div class="game-board">
             <div class="top-area"></div>
             <div class="bottom-area"></div>
         </div>
     </main>
+
+    <dialog id="gameover-modal">
+        <div id="dialog-wrapper">
+            <h2 id="modal-message">Would you like to play again?</h2>
+            <div class="modal-btns">
+                <button id="yes-btn">Yes</button>
+                <button id="no-btn">No</button>
+            </div>
+        </div>
+    </dialog>
 </body>
-</html>y
+</html>
