@@ -126,13 +126,13 @@ header h2 {
 .txt-cell {
     display: flex;
     align-items: center;
-    width: clamp(8px, 10vw, 36px);
-    height: clamp(8px, 10vw, 36px);
-    padding: clamp(1rem, 10vw, 2rem);
+    width: clamp(4px, 10vw, 36px);
+    height: clamp(4px, 10vw, 36px);
+    padding: 2rem;
     justify-content: center;
     border: 1px solid var(--gray-color);
     border-radius: .5rem;
-    font-size: clamp(8px, 10vw, 36px);
+    font-size: clamp(6px, 10vw, 36px);
     user-select: none;
 }
 
@@ -171,13 +171,13 @@ header h2 {
 .letters-btn {
     display: flex;
     align-items: center;
-    width: clamp(8px, 5vw, 36px);
-    height: clamp(8px, 5vw, 36px);
-    padding: clamp(1.5rem, 5vw, 2rem);
+    width: clamp(4px, 5vw, 36px);
+    height: clamp(4px, 5vw, 36px);
+    padding: 1rem;
     justify-content: center;
     border: 1px solid var(--gray-color);
     border-radius: .5rem;
-    font-size: clamp(8px, 8vw, 24px);
+    font-size: clamp(4px, 8vw, 24px);
     background-color: var(--white-color);
     cursor: pointer;
     transition: .2s;

@@ -60,7 +60,22 @@ function createPlayer (name = "Player") {
 }
 
 const wordBank = (function () {
-    const words = ["Potato", "Eggs", "Automobile"];
+    const words = [
+    "Waffle", "Gorilla", "Telescope", "Lightning", "Cupcake",
+    "Astronaut", "Dolphin", "Scarecrow", "Snowman", "Walrus",
+    "Parachute", "Mermaid", "Burrito", "Haunted", "Thunder",
+    "Sasquatch", "Pretzel", "Blizzard", "Platypus", "Zombie",
+    "Cheeseburger", "Fireworks", "Lemonade", "Compass", "Dumpling",
+    "Hedgehog", "Mustache", "Quicksand", "Raccoon", "Xylophone",
+    "Chameleon", "Trombone", "Meatball", "Sunflower", "Boomerang",
+    "Caterpillar", "Pineapple", "Backpack", "Tarantula", "Whirlpool",
+    "Cat", "Frog", "Moon", "Duck", "Cake",
+    "Bear", "Lamp", "Pizza", "Ghost", "Robot",
+    "Taco", "Wolf", "Crab", "Star", "Jazz",
+    "Fish", "Bone", "Toad", "Maze", "Quiz",
+    "Slime", "Goat", "Kite", "Lava", "Yeti",
+    "Beet", "Claw", "Joke", "Zoom", "Mud"
+    ];
 
     const getRandomWord = () => words[Math.floor(Math.random() * words.length)];
 
@@ -177,6 +192,7 @@ function createGame(){
 
     const getGameMsg = () => gameMsg;
     const getGameStatus = () => gameStatus;
+    const getSecretWord = () => secretWord;
 
     return {
         getUserWord,
@@ -190,6 +206,7 @@ function createGame(){
         getGameMsg,
         resetGame,
         getGameStatus,
+        getSecretWord
     }
 }
 
@@ -328,7 +345,7 @@ function createGame(){
         const modalMsg = document.getElementById('modal-message');
 
         if(game.getGameStatus() === "lose"){
-            modalMsg.textContent = "You lose... Would you like to play again?"
+            modalMsg.textContent = `You lose. The secret word was "${game.getSecretWord().toUpperCase()}". Would you like to play again?`
             modal.showModal();
         } 
 
