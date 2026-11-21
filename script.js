@@ -1,4 +1,4 @@
-function cell() {
+function empty() {
 let value = "";
 
 const addLetter = (letter) => {
@@ -59,6 +59,14 @@ function createPlayer (name = "Player") {
 
 }
 
+const wordBank = (function () {
+    const words = ["Potato", "Eggs", "Automobile"];
+
+    const getRandomWord = () => words[Math.floor(Math.random() * words.length)];
+
+    return { getRandomWord };
+})();
+
 
 function createGame(){
 
@@ -68,26 +76,25 @@ function createGame(){
     let userWord = [];
     let arrSecretWord = [];
 
-    const generateWord = () => {
-        const words = ["Potato", "Eggs", "Adam", "Computer", "Bottle", "Automobile"];
-        return words[Math.floor(Math.random() * words.length)];
-    }
-
     const initializeRound = () => {
-        secretWord = generateWord();
-        arrSecretWord = secretWord.toLocaleLowerCase().split('');
+        let newWord = wordBank.getRandomWord();
+
+        if(newWord === secretWord) return initializeRound();
+        
+
+        secretWord = newWord;
+        arrSecretWord = secretWord.toLowerCase().split('');
 
         userWord = [];
         for(let i = 0; i < secretWord.length; i++){
-            userWord[i] = cell();
+            userWord[i] = empty();
         };
 
     }
 
     initializeRound();
     
-    const getSecretWord = () => secretWord;
-    const getUserWord = () => userWord;
+    const getUserWord = () => userWord.map(n => n.getLetter());
 
     let guess = null;
 
@@ -115,28 +122,26 @@ function createGame(){
         });
     }
 
-    let isGameOver = {
-        playerLose: false,
-        playerWin: false,
-    }
+
+    let gameStatus = "playing";
 
     let gameMsg = "";
 
     const gameOver = () => {
         if(player.getLives() === 0){
-            isGameOver.playerLose = true;
-            return true;
+            gameStatus = "lose";
+            return;
         } 
         
         if(userWord.every(n => n.getLetter() != "")){
-            isGameOver.playerWin = true;
-            return true;
+            gameStatus = "win";
+            return;
         };
     }
     
 
     const playRound = (letter) => {
-        if(gameOver()) return;
+        if(gameStatus !== "playing") return;
         
         checkGuess(letter);
         
@@ -150,33 +155,30 @@ function createGame(){
             gameMsg = `Nice one, ${player.getPlayerName()}! Keep going.`
         }
 
-        if(isGameOver.playerLose){
+        if(gameStatus === "lose"){
             player.addLoss();
-        } else if(isGameOver.playerWin){
+        } else if(gameStatus === "win"){
             player.addWin();
         };
+
     }
 
     const resetGame = () => {
         gameMsg = "";
 
-        isGameOver.playerLose = false;
-        isGameOver.playerWin = false;
+        gameStatus = "playing";
 
         guess = null;
 
         player.resetLives();
 
         initializeRound();
-
-        arrSecretWord = secretWord.toLowerCase().split('');
     }
 
-    const getIsGameOver = () => isGameOver;
     const getGameMsg = () => gameMsg;
+    const getGameStatus = () => gameStatus;
 
     return {
-        getSecretWord,
         getUserWord,
         getGuess,
         playRound,
@@ -185,15 +187,13 @@ function createGame(){
         getLosses: player.getLosses,
         updatePlayerName: player.updatePlayerName,
         getPlayerName: player.getPlayerName,
-        updateWord,
-        getIsGameOver,
         getGameMsg,
         resetGame,
-        gameOver,
+        getGameStatus,
     }
 }
 
-function displayController() {
+(function displayController () {
     const game = createGame();
 
     const boardTop = document.querySelector('.top-area');
@@ -277,7 +277,7 @@ function displayController() {
         const printAlphabet = (() => {
             let alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
-            for(i = 0; i < alphabet.length; i++){
+            for(let i = 0; i < alphabet.length; i++){
                 const cell = document.createElement('button');
                 cell.classList.add('letters-btn');
                 cell.setAttribute('letter', alphabet[i]);
@@ -306,9 +306,9 @@ function displayController() {
         const userLives = game.getLives();
         
         userWord.forEach((item, index) => {
-            if(item.getLetter() != ""){
+            if(item != ""){
                 const cell = document.querySelector(`.txt-cell[index="${index}"]`);
-                cell.textContent = item.getLetter();
+                cell.textContent = item;
             }
         })
 
@@ -327,12 +327,12 @@ function displayController() {
 
         const modalMsg = document.getElementById('modal-message');
 
-        if(game.getIsGameOver().playerLose){
+        if(game.getGameStatus() === "lose"){
             modalMsg.textContent = "You lose... Would you like to play again?"
             modal.showModal();
         } 
 
-        if (game.getIsGameOver().playerWin) {
+        if (game.getGameStatus() === "win") {
             modalMsg.textContent = "You win! Would you like to play again?"
             modal.showModal();
         }
@@ -365,7 +365,7 @@ function displayController() {
 
 
     boardBottom.addEventListener('click', (e) => {
-        if(game.gameOver()) {
+        if(game.getGameStatus() !== "playing") {
             modal.showModal();
             update();
             return;
@@ -400,7 +400,4 @@ function displayController() {
             modal.close();
         }
     })
-};
-
-
-displayController();
+})();
